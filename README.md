@@ -1,4 +1,4 @@
 japa-ml
 =======
 
-Machine learning library for Node.js
+Machine learning library for .NET
