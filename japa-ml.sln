@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{152DCA91-C32F-4E99-9F0B-5B825E19AB8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Japa.ML.Core", "Source\Japa.ML.Core\Japa.ML.Core.csproj", "{A8645C41-8E3D-4D56-94B1-B7ACC3554619}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALGLIB", "Source\ALGLIB\ALGLIB.csproj", "{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{022C6CCC-7B39-472A-830B-307F83BBC923}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Japa.ML.Core.Tests", "Tests\Japa.ML.Core.Tests\Japa.ML.Core.Tests.csproj", "{CD9098B0-8727-46D4-BC03-E480633B3734}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE2235F1-C5E7-408C-B252-E6FCA3E8BE77}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8645C41-8E3D-4D56-94B1-B7ACC3554619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8645C41-8E3D-4D56-94B1-B7ACC3554619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8645C41-8E3D-4D56-94B1-B7ACC3554619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8645C41-8E3D-4D56-94B1-B7ACC3554619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD9098B0-8727-46D4-BC03-E480633B3734}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD9098B0-8727-46D4-BC03-E480633B3734}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD9098B0-8727-46D4-BC03-E480633B3734}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD9098B0-8727-46D4-BC03-E480633B3734}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8645C41-8E3D-4D56-94B1-B7ACC3554619} = {152DCA91-C32F-4E99-9F0B-5B825E19AB8D}
+		{F4CDBA01-EE74-4CED-B5A2-36DC75A0F8CB} = {152DCA91-C32F-4E99-9F0B-5B825E19AB8D}
+		{CD9098B0-8727-46D4-BC03-E480633B3734} = {022C6CCC-7B39-472A-830B-307F83BBC923}
+	EndGlobalSection
+EndGlobal
