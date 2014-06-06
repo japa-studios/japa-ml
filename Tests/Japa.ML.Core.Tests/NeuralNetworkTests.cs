@@ -12,9 +12,12 @@ namespace Japa.ML.Core.Tests
         {
             var nn = new NeuralNetwork(new NeuralNetworkConfig
             {
-
+                InputUnits = 400,
+                HiddenLayers = new uint[] { 25 },
+                OutputUnits = 10
             });
-            nn.Train(new NeuralNetworkTrainRequest { });
+            var result = nn.Train(new NeuralNetworkTrainRequest());
         }
+        
     }
 }

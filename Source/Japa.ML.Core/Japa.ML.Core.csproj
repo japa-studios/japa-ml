@@ -43,6 +43,7 @@
     <Compile Include="Supervised\LinearRegression.cs" />
     <Compile Include="Supervised\LogisticRegression.cs" />
     <Compile Include="Supervised\NeuralNetwork.cs" />
+    <Compile Include="Supervised\NeuralNetworkEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Unsupervised\" />
