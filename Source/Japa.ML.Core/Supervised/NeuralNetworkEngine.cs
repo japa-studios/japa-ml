@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.LinearAlgebra.Double;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,20 +9,37 @@ namespace Japa.ML.Core.Supervised
 {
     public class NeuralNetworkEngine
     {
-        public double[] SigmoidGradient(double[] z)
+        private NeuralNetworkConfig _config;
+        public NeuralNetworkEngine(NeuralNetworkConfig config)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            _config = config;
+        }
+
+        public Vector SigmoidGradient(Vector z)
         {
             //g = sigmoid(z) .* (1-sigmoid(z));
-            throw new NotImplementedException();
+            var s = Sigmoid(z);
+            Parallel.For(0, z.Count, 
+                i => s[i] = s[i] * (1 - s[i]));
+            return s;
         }
-        public double[] Sigmoid(double[] z)
+        public Vector Sigmoid(Vector z)
         {
             //g = 1.0 ./ (1.0 + exp(-z));
-            throw new NotImplementedException();
+
+            return DenseVector.Create(z.Count, i => 1 / (1 + Math.Pow(Math.E, -1 * z[i])));
         }
-        public double[,] ForwardPropagation(double[,] Theta, double[,] X)
+
+        public Matrix[] ForwardPropagation(Matrix[] Theta, Matrix X)
         {
+            var m = X.RowCount;
             //% Forward Propagation
             //a1 = [ones(1, m); X'];
+            var A1 = X.Transpose().InsertColumn(0, DenseVector.Create(m, i => 1));
+
+            var Z2 = Theta[0] * A1;
+            var A2 = Sigmoid(DenseVector.OfVector(Z2.Column(0)));
 
             //z2 = Theta1 * a1; % 25x5000
             //a2 = sigmoid(z2);
@@ -31,7 +49,8 @@ namespace Japa.ML.Core.Supervised
             //a3 = sigmoid(z3);
             throw new NotImplementedException();
         }
-        public double[,] BackPropagation(double[,] A, double[,] Theta, double[,] Y)
+
+        public Matrix[] BackPropagation(Matrix[] A, Matrix[] Theta, Matrix Y)
         {
             //% Backpropagation
             //d3 = a3' - y_matrix;
@@ -45,15 +64,16 @@ namespace Japa.ML.Core.Supervised
             //Delta1 = d2 * a1';
             throw new NotImplementedException();
         }
-        public double CalculateJ(double[] nnOut, double[] y, double lambda, double[,] theta)
+        
+        public double CalculateJ(Vector nnOut, Vector y, double lambda, Matrix[] Theta)
         {
             //calcular custo
             //J = (1/m) * sum(((-y_matrix' .* log(a3)) - ((1-y_matrix)' .* log(1-a3)))(:)); 
             //J = J + ( (lambda/(2*m)) * ( sum(Theta1(:, 2:end)(:).^2) + sum(Theta2(:, 2:end)(:).^2) ) );
             return 0;
         }
-
-        public double[,] ComputeGradients(double[,] Theta, double[,] Delta, double lambda)
+        
+        public Matrix[] ComputeGradients(Matrix[] Theta, Matrix[] Delta, double lambda)
         {
             //calcular gradients
             //Theta2_grad(:,1) = ((1/m) * Delta2(:,1)); % não regularizar bias
@@ -62,16 +82,20 @@ namespace Japa.ML.Core.Supervised
             //Theta1_grad(:,2:end) = ((1/m) * Delta1(:,2:end)) + ((lambda/m) * (Theta1(:,2:end)));
             throw new NotImplementedException();
         }
-        public void Cost(double[] theta, ref double J, double[] grad, double[,] X, double[] y, double lambda)
-        {
-            //reshape theta to Theta using Config params
-            var Theta = new double[,] { };
 
+        public class NeuralNetworkCostResult 
+        {
+            public double J { get; set; }
+            public Matrix[] Gradients { get; set; }
+        }
+
+        public NeuralNetworkCostResult Cost(Matrix[] Theta, Matrix X, Vector y, double lambda)
+        {
             var A = ForwardPropagation(Theta, X);
 
             //% transformando vetor de labels 'y' em matriz binária com 1 na posição correspondente ao label
             //y_matrix = eye(num_labels)(y,:); % 5000x10
-            var Y = new double[,] { };
+            var Y = DenseMatrix.Create(y.Count, _config.OutputUnits, (i, j) => y[i]);
             var Delta = BackPropagation(A, Theta, Y);
 
 
@@ -79,27 +103,57 @@ namespace Japa.ML.Core.Supervised
 
             //% Unroll gradients
             //grad = [Theta1_grad(:) ; Theta2_grad(:)];
+            return new NeuralNetworkCostResult
+            {
 
+            };
+        }
+        public void CostForAlglib(double[] theta, ref double J, double[] grad, object obj)
+        {
+            var request = obj as NeuralNetworkTrainingContext;
+            var layers = _config.Layers;
+            var Theta = ReshapeTheta(theta, layers);
 
+            var result = Cost(Theta, request.X, request.y, request.Lambda);
+
+            J = result.J;
+            grad = result.Gradients.SelectMany(m => m.ToColumnWiseArray()).ToArray();
         }
 
-        public void Cost(double[] theta, ref double J, double[] grad, object obj)
+        public double[] ReshapeTheta(Matrix[] Theta)
         {
-            var request = obj as NeuralNetworkTrainRequest;
-            Cost(theta, ref J, grad, request.X, request.y, request.Lambda);
+            return Theta.SelectMany(m => m.ToRowWiseArray()).ToArray();
         }
-        public double[] InitializeTheta(uint inputUnits, uint outputUnits)
+        public Matrix[] ReshapeTheta(double[] theta, int[] layers)
         {
-            double[,] result;
-            alglib.ablas.rmatrixmv
+            //reshape theta to Theta using Config params
+            var Theta = new Matrix[layers.Length - 1]; //3
+            var skip = 0;
+            var take = 0;
+            for (int i = 0; i < Theta.Length; i++)
+            {
+                take = layers[i + 1] * (layers[i] + 1);
+                Theta[i] = DenseMatrix.OfColumnMajor(
+                    layers[i + 1],
+                    layers[i] + 1,
+                    theta.Skip(skip).Take(take).ToArray());
+                skip += take;
+            }
 
-            //var W = new double[outputUnits, inputUnits + 1];
+            return Theta;
+        }
 
-            //W = zeros(L_out, 1 + L_in);
+        public Vector InitializeTheta()
+        {
+            return InitializeTheta(_config.Layers);
+        }
+        public Vector InitializeTheta(int[] layerSizes)
+        {
             //epsilon_init = 0.12;
             //W = rand(L_out, 1 + L_in) * 2 * epsilon_init - epsilon_init;
-
-            throw new NotImplementedException();
+            var layers = layerSizes;
+            var vectorSize = layers.Take(layers.Length - 1).Zip(layers.Skip(1), (v, v2) => (v + 1) * v2).Sum(v => v);
+            return DenseVector.Create(vectorSize, i => alglib.math.randomreal() * 2 * _config.InitializationEpsilon - _config.InitializationEpsilon);
         }
     }
 }
